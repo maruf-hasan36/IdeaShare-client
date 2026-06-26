@@ -155,7 +155,7 @@ md:text-lg
 "
         >
           Real stories. Real lessons. Real growth. A place where people share
-          knowledge that actually changes lives.
+          knowledge that actually changes live.
         </p>
       </motion.div>
 
