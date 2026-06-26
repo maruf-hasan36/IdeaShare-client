@@ -14,7 +14,7 @@ import "swiper/css/pagination";
 const slidesData = [
   {
     id: 1,
-    badge: "Community Wisdom Platforms",
+    badge: "Community Wisdom Platform",
     heading: "Every Life Is\na Masterclass",
     description:
       "Discover real wisdom from real people. Share your journey. Inspire the world.",
