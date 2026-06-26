@@ -1,202 +1,139 @@
-# 📖 WisdomShare
+# 💡 IdeaShare
 
-A full-stack platform for writing, sharing, and discovering personal wisdom lessons. Users can publish free or premium lessons, engage with the community, and access curated content — while admins manage the platform with a dedicated dashboard.
-
-🌐 **Live Site:** [wisdomshare.vercel.app](https://wisdomshare.vercel.app)
-🔧 **Backend Repo:** [wisdomshare-server](https://github.com/nusratjahan7/wisdomshare-server)
+A full-stack platform where users can create, share, and discover meaningful ideas, experiences, and knowledge.  
+IdeaShare helps people publish valuable insights, connect with a community, access premium content, and grow together through shared ideas.
 
 ---
 
-## ✨ Features
+# ✨ Features
 
-### 👤 User Features
+## 👤 User Features
 
-- Register and log in securely via **BetterAuth**
-- Browse all lessons — free lessons visible to everyone, **premium lessons require login + Stripe payment**
-- Lesson detail page is **protected** — login required to view
-- Create, edit, and delete personal lessons
-- Like, save, comment on, and report lessons
-- Free plan save limit enforced per user
+- Secure user authentication and account management
+- Explore and discover shared ideas and lessons
+- Browse free content without restrictions
+- Access premium content with protected access
+- Create, edit, and delete personal ideas
+- Like and interact with community posts
+- Save useful ideas for future reference
+- Comment and share feedback
+- Report inappropriate content
+- Manage personal profile information
+- User dashboard for managing activities
+
+---
+
+# 💎 Premium Content System
+
+- Premium ideas are protected with access control
+- Authentication required for restricted content
+- Payment-based access system
+- Secure checkout process
+- Automatic premium access verification
+
+---
+
+# 🛡️ Admin Features
+
+- Dedicated admin dashboard
+- Manage users and platform members
+- Assign admin roles
+- Remove users when required
+- Manage all published ideas
+- Feature selected ideas on homepage
+- Review user reports
+- Maintain platform quality and safety
+
+---
+
+# 🏠 Platform Features
+
+- Featured ideas section
+- Public idea feed
+- Community-driven knowledge sharing
+- Discover creative thoughts and experiences
+- Interactive engagement system
+- Responsive design for all devices
+
+---
+
+# 📊 Dashboard Features
+
+## User Dashboard
+
+- Create and manage ideas
+- Edit or remove personal content
+- View saved ideas
 - Update profile information
+- Track personal activities
 
-### 🛡️ Admin Features
+## Admin Dashboard
 
-- Promote users to admin role
-- Delete users from the platform
-- Mark lessons as **Featured** — shown on the homepage
-- View and manage all lessons across the platform
-- Access reported lessons and user reports
-
-### 🏠 Homepage
-
-- Featured Lessons section (curated by admin, backed by a dedicated MongoDB collection)
-- Public lesson feed — free content accessible without login
-
-### 💳 Payments
-
-- **Stripe** integration for premium lesson access
-- Plan-based access control (free vs. premium)
+- User management
+- Content moderation
+- Report management
+- Platform analytics
+- Featured content control
 
 ---
 
-## 🛠️ Tech Stack
+# 🔐 Authentication & Security
 
-### Frontend
-
-| Technology               | Purpose                            |
-| ------------------------ | ---------------------------------- |
-| Next.js (JavaScript/JSX) | React framework, SSR/SSG, routing  |
-| Tailwind CSS             | Utility-first styling              |
-| Framer Motion            | Animations and transitions         |
-| Recharts                 | Data visualization in dashboards   |
-| React Hot Toast          | Toast notifications                |
-| BetterAuth               | Authentication (client-side hooks) |
-| Stripe.js                | Payment integration                |
-
-### Backend
-
-| Technology              | Purpose                      |
-| ----------------------- | ---------------------------- |
-| Node.js + Express.js    | REST API server              |
-| MongoDB (native driver) | Database                     |
-| BetterAuth              | Session-based authentication |
-| Stripe                  | Payment processing           |
-| Vercel                  | Deployment                   |
+- Secure authentication system
+- Protected routes
+- Role-based authorization
+- User permission management
+- Server-side security validation
 
 ---
 
-## 🚀 Getting Started
+# 💳 Payment Features
 
-### Prerequisites
-
-- Node.js >= 18
-- MongoDB Atlas account (or local MongoDB)
-- Stripe account (for payment keys)
-
-### 1. Clone the repositories
-
-```bash
-# Frontend
-git clone https://github.com/nusratjahan7/wisdomshare.git
-cd wisdomshare
-npm install
-
-# Backend
-git clone https://github.com/nusratjahan7/wisdomshare-server.git
-cd wisdomshare-server
-npm install
-```
-
-### 2. Environment Variables
-
-**Frontend `.env.local`:**
-
-```env
-BETTER_AUTH_SECRET=your_better_auth_secret
-BETTER_AUTH_URL=http://localhost:3000
-
-MONGODB_URI=your_mongodb_connection_string
-AUTH_DB_NAME=your_auth_db_name
-
-NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
-
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
-STRIPE_SECRET_KEY=your_stripe_secret_key
-```
-
-**Backend `.env`:**
-
-```env
-PORT=5000
-MONGODB_URI=your_mongodb_connection_string
-STRIPE_SECRET_KEY=your_stripe_secret_key
-CLIENT_URL=http://localhost:3000
-```
-
-### 3. Run the development servers
-
-```bash
-# Backend (from wisdomshare-server/)
-npm start
-
-# Frontend (from wisdomshare/)
-npm run dev
-```
-
-Frontend runs on `http://localhost:3000`, backend on `http://localhost:5000`.
+- Premium content payment system
+- Secure payment integration
+- Subscription/access verification
+- Automated premium feature unlocking
 
 ---
 
-## 📊 Dashboards
+# ⚙️ Core Functionality
 
-### User Dashboard
-
-- View and manage all personal lessons (create, edit, delete)
-- See saved lessons (with free plan save limit)
-- Update profile (name, avatar, bio)
-
-### Admin Dashboard
-
-- **Users Table** — promote to admin, delete users
-- **Lessons Table** — manage all lessons, mark as featured
-- **Reports** — view reported content from users
-- **Analytics** — charts powered by Recharts
+- Idea publishing system
+- Content management system
+- Like, save, comment features
+- Reporting and moderation workflow
+- Featured content management
+- User role management
+- Secure API communication
+- Database-driven platform
 
 ---
 
-## 🔒 Auth & Access Control
+# 🛠️ Technology Stack
 
-Authentication is handled by **BetterAuth**. Route protection is enforced at both the frontend (middleware/redirects) and API level.
+## Frontend
 
-| Route                  | Access                             |
-| ---------------------- | ---------------------------------- |
-| `/` (Homepage)         | Public                             |
-| `/lessons`             | Public (free lessons visible)      |
-| `/lessons/[id]`        | Login required                     |
-| Premium lesson content | Login + active Stripe subscription |
-| `/dashboard/user`      | Authenticated users                |
-| `/dashboard/admin`     | Admin role only                    |
+- Next.js
+- React
+- Tailwind CSS
+- Framer Motion
+- Recharts
+- React Hot Toast
+- BetterAuth
+- Stripe Integration
 
----
+## Backend
 
-## 💡 Key Implementation Details
-
-- **Featured Lessons** — stored in a dedicated MongoDB collection; admins toggle featured status per lesson
-- **Save Limit** — free-plan users have a capped number of saved lessons, enforced server-side
-- **Stripe Payments** — checkout session created server-side; webhook updates user subscription status
-- **Reports System** — users can flag lessons; admins review reports in the dashboard
-- **Lesson Interactions** — likes, saves, comments, and reports all handled via dedicated API endpoints
-
----
-
-## 📦 Backend Dependencies
-
-```json
-{
-  "express": "^5.2.1",
-  "mongodb": "^7.3.0",
-  "cors": "^2.8.6",
-  "dotenv": "^17.4.2"
-}
-```
+- Node.js
+- Express.js
+- MongoDB
+- BetterAuth
+- Stripe
+- REST API Architecture
 
 ---
 
-## 🌐 Deployment
+# 🚀 Vision
 
-Both frontend and backend are deployed on **Vercel**.
-
-- Frontend: [wisdomshare.vercel.app](https://wisdomshare.vercel.app)
-- Backend: [wisdomshare-server.vercel.app](https://wisdomshare-server.vercel.app)
-
-The backend uses a `vercel.json` config to serve the Express app as a serverless function.
-
----
-
-## 👩‍💻 Author
-
-**Nusrat Jahan**
-[GitHub](https://github.com/nusratjahan7)
+IdeaShare is a platform where ideas turn into impact.  
+It creates a space where people can share knowledge, discover new perspectives, and learn from each other's experiences.
