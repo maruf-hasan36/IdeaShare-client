@@ -205,7 +205,7 @@ export default function TopContributors() {
             </motion.div>
           ))
         ) : (
-          <p className="text-zinc-400">No contributors found</p>
+          <p className="text-zinc-400">No contributors found..</p>
         )}
       </motion.div>
     </section>
