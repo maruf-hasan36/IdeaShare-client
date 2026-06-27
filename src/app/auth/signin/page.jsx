@@ -618,7 +618,7 @@ export default function LoginPage() {
                     textDecoration: "none",
                   }}
                 >
-                  Create one for free
+                  Create one for free.
                 </Link>
               </p>
             </div>
