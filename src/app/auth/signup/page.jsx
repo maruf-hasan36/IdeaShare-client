@@ -742,7 +742,7 @@ export default function SignupPage() {
                     textDecoration: "none",
                   }}
                 >
-                  Sign in
+                  Sign In
                 </Link>
               </p>
             </div>
