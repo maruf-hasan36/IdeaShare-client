@@ -55,7 +55,7 @@ export default function CTASection() {
               href={"/pricing"}
               className="block text-center w-full sm:w-auto px-7 py-3 rounded-xl font-bold text-sm text-white border border-white/40 bg-white/5 hover:bg-white/10 transition-colors"
             >
-              See Premium Plan
+              See Premium Plans
             </Link>
           </motion.div>
         </div>
