@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Check, Eye, EyeOff, X } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 
@@ -36,14 +36,14 @@ const IdeaShareLogo = ({ size = "md" }) => (
         fill="none"
       >
         <defs>
-          <linearGradient id="sigSparkGrad" x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id="loginSparkGrad" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#a78bfa" />
             <stop offset="100%" stopColor="#22d3ee" />
           </linearGradient>
         </defs>
         <path
           d="M12 2L13.8 9.2L21 12L13.8 14.8L12 22L10.2 14.8L3 12L10.2 9.2L12 2Z"
-          fill="url(#sigSparkGrad)"
+          fill="url(#loginSparkGrad)"
         />
       </svg>
     </div>
@@ -63,64 +63,54 @@ const IdeaShareLogo = ({ size = "md" }) => (
   </div>
 );
 
-export default function SignupPage() {
+export default function LoginPage() {
   const router = useRouter();
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [image, setImage] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasLowercase = /[a-z]/.test(password);
-  const isLongEnough = password.length >= 6;
-  const isPasswordValid = hasUppercase && hasLowercase && isLongEnough;
-
-  const handleGoogleSignUp = async () => {
+  const handleGoogleSignIn = async () => {
     const loadingToast = toast.loading("Connecting to Google...");
     try {
       setIsLoading(true);
-      await authClient.signUp.social({ provider: "google", callbackURL: "/" });
-    } catch (err) {
-      toast.error(err.message || "Google registration failed.", {
-        id: loadingToast,
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/",
+        errorCallback: (error) => {
+          toast.error(error.message || "Google authentication failed.", {
+            id: loadingToast,
+          });
+        },
       });
+    } catch {
+      toast.error("An unexpected error occurred.", { id: loadingToast });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleEmailSignUp = async (e) => {
+  const handleEmailSignIn = async (e) => {
     e.preventDefault();
-    if (!name || !email || !password) return;
-    if (!isPasswordValid) {
-      toast.error("Please meet all password requirements.");
-      return;
-    }
-
-    const loadingToast = toast.loading("Creating your account...");
+    if (!email || !password) return;
+    const loadingToast = toast.loading("Signing you in...");
     try {
       setIsLoading(true);
-      const { data, error } = await authClient.signUp.email({
+      const { data, error } = await authClient.signIn.email({
         email,
         password,
-        name,
-        image: image || undefined,
         dontRedirect: true,
       });
       if (error) {
-        toast.error(error.message || "Could not complete registration.", {
+        toast.error(error.message || "Invalid email or password.", {
           id: loadingToast,
         });
         return;
       }
       if (data) {
-        toast.success("Welcome to IdeaShare! 🚀", { id: loadingToast });
-        setTimeout(() => {
-          router.push("/");
-          router.refresh();
-        }, 1200);
+        toast.success("Welcome back! 🚀", { id: loadingToast });
+        router.push("/");
+        router.refresh();
       }
     } catch {
       toast.error("Something went wrong. Please try again.", {
@@ -138,24 +128,10 @@ export default function SignupPage() {
         @keyframes float2 { 0%,100%{transform:translateY(0) translateX(0)} 50%{transform:translateY(18px) translateX(-14px)} }
         @keyframes float3 { 0%,100%{transform:translateY(0) translateX(0)} 50%{transform:translateY(-14px) translateX(-10px)} }
         @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
-        @keyframes borderPulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
+        @keyframes spin-slow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        @keyframes spin-reverse { from{transform:rotate(360deg)} to{transform:rotate(0deg)} }
 
-        .signup-left-panel {
-          display: none;
-        }
-        @media (min-width: 1024px) {
-          .signup-left-panel {
-            display: flex !important;
-          }
-          .signup-grid {
-            grid-template-columns: 1fr 1fr !important;
-          }
-          .signup-mobile-logo {
-            display: none !important;
-          }
-        }
-
-        .signup-input {
+        .login-input {
           width: 100%;
           padding: 11px 16px;
           border-radius: 12px;
@@ -167,16 +143,13 @@ export default function SignupPage() {
           transition: all 0.2s ease;
           backdrop-filter: blur(8px);
         }
-        .signup-input::placeholder { color: rgba(100,116,139,0.6); }
-        .signup-input:focus {
+        .login-input::placeholder { color: rgba(100,116,139,0.6); }
+        .login-input:focus {
           border-color: rgba(103,232,249,0.5);
           background: rgba(8,8,28,0.9);
           box-shadow: 0 0 0 3px rgba(6,182,212,0.08), 0 0 20px rgba(124,58,237,0.1);
         }
-        .signup-input:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
+        .login-input:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .input-label {
           font-size: 11px;
@@ -206,8 +179,7 @@ export default function SignupPage() {
         }
         .glow-btn::before {
           content: '';
-          position: absolute;
-          inset: 0;
+          position: absolute; inset: 0;
           background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.12) 50%, transparent 100%);
           background-size: 200% 100%;
           animation: shimmer 2.5s infinite linear;
@@ -240,58 +212,49 @@ export default function SignupPage() {
         .google-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
         .divider-line {
-          flex: 1;
-          height: 1px;
+          flex: 1; height: 1px;
           background: linear-gradient(90deg, transparent, rgba(124,58,237,0.3), transparent);
         }
 
-        .req-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
-        .req-met { color: #34d399; }
-        .req-unmet { color: rgba(100,116,139,0.7); }
-
-        .left-feature {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 14px 16px;
-          border-radius: 14px;
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(124,58,237,0.15);
-          backdrop-filter: blur(8px);
+        .signin-left-panel { display: none; }
+        @media (min-width: 1024px) {
+          .signin-left-panel { display: flex !important; flex-direction: column; justify-content: center; }
+          .signin-grid { grid-template-columns: 1fr 1fr !important; }
+          .signin-mobile-logo { display: none !important; }
         }
-        .left-feature-icon {
-          width: 32px; height: 32px;
-          border-radius: 10px;
-          background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(6,182,212,0.3));
-          border: 1px solid rgba(124,58,237,0.3);
-          display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0;
-          font-size: 14px;
+
+        .orbit-ring {
+          position: absolute;
+          border-radius: 50%;
+          border: 1px solid rgba(124,58,237,0.12);
+        }
+        .left-stat-card {
+          padding: 16px 20px;
+          border-radius: 16px;
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(124,58,237,0.12);
+          backdrop-filter: blur(8px);
         }
       `}</style>
 
       <main
         style={{
           minHeight: "100vh",
-          display: "grid",
-          gridTemplateColumns: "1fr",
           background: "#060612",
           paddingTop: 64,
         }}
       >
         <div
-          className="signup-grid"
+          className="signin-grid"
           style={{ display: "grid", minHeight: "calc(100vh - 64px)" }}
         >
           {/* ── LEFT PANEL ── */}
           <div
-            className="signup-left-panel"
+            className="signin-left-panel"
             style={{
               background:
                 "linear-gradient(135deg, #0a0618 0%, #060612 50%, #020d18 100%)",
               padding: "60px 56px",
-              flexDirection: "column",
-              justifyContent: "center",
               position: "relative",
               overflow: "hidden",
             }}
@@ -300,39 +263,39 @@ export default function SignupPage() {
             <div
               style={{
                 position: "absolute",
-                top: "15%",
-                left: "10%",
-                width: 300,
-                height: 300,
+                top: "10%",
+                left: "5%",
+                width: 350,
+                height: 350,
                 borderRadius: "50%",
                 background:
-                  "radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%)",
-                animation: "float1 8s ease-in-out infinite",
+                  "radial-gradient(circle, rgba(124,58,237,0.1) 0%, transparent 70%)",
+                animation: "float1 9s ease-in-out infinite",
               }}
             />
             <div
               style={{
                 position: "absolute",
-                bottom: "20%",
-                right: "5%",
-                width: 250,
-                height: 250,
+                bottom: "15%",
+                right: "0%",
+                width: 280,
+                height: 280,
                 borderRadius: "50%",
                 background:
-                  "radial-gradient(circle, rgba(6,182,212,0.1) 0%, transparent 70%)",
-                animation: "float2 10s ease-in-out infinite",
+                  "radial-gradient(circle, rgba(6,182,212,0.08) 0%, transparent 70%)",
+                animation: "float2 11s ease-in-out infinite",
               }}
             />
             <div
               style={{
                 position: "absolute",
-                top: "55%",
-                left: "40%",
-                width: 180,
-                height: 180,
+                top: "50%",
+                left: "35%",
+                width: 200,
+                height: 200,
                 borderRadius: "50%",
                 background:
-                  "radial-gradient(circle, rgba(167,139,250,0.08) 0%, transparent 70%)",
+                  "radial-gradient(circle, rgba(167,139,250,0.07) 0%, transparent 70%)",
                 animation: "float3 7s ease-in-out infinite",
               }}
             />
@@ -343,16 +306,41 @@ export default function SignupPage() {
                 position: "absolute",
                 inset: 0,
                 backgroundImage:
-                  "radial-gradient(rgba(124,58,237,0.15) 1px, transparent 1px)",
+                  "radial-gradient(rgba(124,58,237,0.12) 1px, transparent 1px)",
                 backgroundSize: "32px 32px",
                 opacity: 0.4,
+              }}
+            />
+
+            {/* Orbit rings decoration */}
+            <div
+              className="orbit-ring"
+              style={{
+                width: 280,
+                height: 280,
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%,-50%) rotate(20deg)",
+                animation: "spin-slow 30s linear infinite",
+              }}
+            />
+            <div
+              className="orbit-ring"
+              style={{
+                width: 380,
+                height: 380,
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%,-50%) rotate(-15deg)",
+                animation: "spin-reverse 40s linear infinite",
+                borderColor: "rgba(6,182,212,0.08)",
               }}
             />
 
             <div style={{ position: "relative", zIndex: 1, maxWidth: 400 }}>
               <IdeaShareLogo size="lg" />
 
-              <div style={{ marginTop: 36, marginBottom: 12 }}>
+              <div style={{ marginTop: 40, marginBottom: 10 }}>
                 <span
                   style={{
                     fontSize: 11,
@@ -362,21 +350,21 @@ export default function SignupPage() {
                     color: "rgba(103,232,249,0.7)",
                   }}
                 >
-                  Join the community
+                  Welcome back
                 </span>
               </div>
 
               <h1
                 style={{
-                  fontSize: 36,
+                  fontSize: 38,
                   fontWeight: 900,
-                  lineHeight: 1.15,
+                  lineHeight: 1.12,
                   letterSpacing: "-0.03em",
                   color: "#f1f5f9",
                   marginBottom: 16,
                 }}
               >
-                Ideas worth
+                Your ideas
                 <br />
                 <span
                   style={{
@@ -387,57 +375,42 @@ export default function SignupPage() {
                     backgroundClip: "text",
                   }}
                 >
-                  sharing.
+                  await you.
                 </span>
               </h1>
 
               <p
                 style={{
                   fontSize: 14,
-                  color: "rgba(148,163,184,0.7)",
-                  lineHeight: 1.7,
-                  marginBottom: 36,
-                  maxWidth: 320,
+                  color: "rgba(148,163,184,0.65)",
+                  lineHeight: 1.75,
+                  marginBottom: 40,
+                  maxWidth: 300,
                 }}
               >
-                A community where real people share the lessons and ideas that
-                shaped their lives.
+                Sign in to continue your journey and connect with thousands of
+                idea-sharers worldwide.
               </p>
 
+              {/* Stats cards */}
               <div
-                style={{ display: "flex", flexDirection: "column", gap: 10 }}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 12,
+                }}
               >
                 {[
-                  { icon: "✦", text: "Real stories from real people" },
-                  { icon: "✦", text: "Unlock premium wisdom content" },
-                  { icon: "✦", text: "Share your own life lessons" },
-                ].map((f, i) => (
-                  <div key={i} className="left-feature">
-                    <div className="left-feature-icon">{f.icon}</div>
-                    <span
-                      style={{
-                        fontSize: 13,
-                        color: "rgba(203,213,225,0.85)",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {f.text}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Stats row */}
-              <div style={{ display: "flex", gap: 32, marginTop: 40 }}>
-                {[
-                  ["12K+", "Members"],
-                  ["4.8★", "Rating"],
-                  ["Free", "To start"],
-                ].map(([val, label]) => (
-                  <div key={label}>
+                  { val: "12K+", label: "Active Members", icon: "👥" },
+                  { val: "4.8★", label: "User Rating", icon: "⭐" },
+                  { val: "500+", label: "Premium Lessons", icon: "📚" },
+                  { val: "Free", label: "To Get Started", icon: "🚀" },
+                ].map(({ val, label, icon }) => (
+                  <div key={label} className="left-stat-card">
+                    <div style={{ fontSize: 18, marginBottom: 4 }}>{icon}</div>
                     <div
                       style={{
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: 800,
                         background: "linear-gradient(90deg, #c4b5fd, #67e8f9)",
                         WebkitBackgroundClip: "text",
@@ -451,8 +424,8 @@ export default function SignupPage() {
                       style={{
                         fontSize: 11,
                         color: "rgba(100,116,139,0.7)",
-                        fontWeight: 500,
                         marginTop: 2,
+                        fontWeight: 500,
                       }}
                     >
                       {label}
@@ -475,10 +448,10 @@ export default function SignupPage() {
               borderLeft: "1px solid rgba(124,58,237,0.1)",
             }}
           >
-            <div style={{ width: "100%", maxWidth: 420 }}>
+            <div style={{ width: "100%", maxWidth: 400 }}>
               {/* Mobile logo */}
               <div
-                className="signup-mobile-logo"
+                className="signin-mobile-logo"
                 style={{
                   display: "flex",
                   justifyContent: "center",
@@ -498,23 +471,23 @@ export default function SignupPage() {
                   textAlign: "center",
                 }}
               >
-                Create your account
+                Welcome back
               </h2>
               <p
                 style={{
                   fontSize: 13,
-                  color: "rgba(100,116,139,0.8)",
+                  color: "rgba(100,116,139,0.7)",
                   textAlign: "center",
                   marginBottom: 28,
                 }}
               >
-                Start sharing and discovering ideas.
+                Sign in to continue your journey.
               </p>
 
               {/* Google */}
               <button
                 className="google-btn"
-                onClick={handleGoogleSignUp}
+                onClick={handleGoogleSignIn}
                 disabled={isLoading}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24">
@@ -564,28 +537,13 @@ export default function SignupPage() {
 
               {/* Form */}
               <form
-                onSubmit={handleEmailSignUp}
+                onSubmit={handleEmailSignIn}
                 style={{ display: "flex", flexDirection: "column", gap: 16 }}
               >
-                {/* Name */}
-                <div>
-                  <label className="input-label">Full Name</label>
-                  <input
-                    className="signup-input"
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Mehedi Hasan"
-                    disabled={isLoading}
-                  />
-                </div>
-
-                {/* Email */}
                 <div>
                   <label className="input-label">Email Address</label>
                   <input
-                    className="signup-input"
+                    className="login-input"
                     type="email"
                     required
                     value={email}
@@ -595,37 +553,11 @@ export default function SignupPage() {
                   />
                 </div>
 
-                {/* Photo URL */}
-                <div>
-                  <label className="input-label">
-                    Photo URL{" "}
-                    <span
-                      style={{
-                        color: "rgba(100,116,139,0.5)",
-                        fontWeight: 400,
-                        textTransform: "none",
-                        fontSize: 11,
-                      }}
-                    >
-                      (optional)
-                    </span>
-                  </label>
-                  <input
-                    className="signup-input"
-                    type="url"
-                    value={image}
-                    onChange={(e) => setImage(e.target.value)}
-                    placeholder="https://example.com/photo.jpg"
-                    disabled={isLoading}
-                  />
-                </div>
-
-                {/* Password */}
                 <div>
                   <label className="input-label">Password</label>
                   <div style={{ position: "relative" }}>
                     <input
-                      className="signup-input"
+                      className="login-input"
                       type={showPassword ? "text" : "password"}
                       required
                       value={password}
@@ -654,71 +586,15 @@ export default function SignupPage() {
                       {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                     </button>
                   </div>
-
-                  {password.length > 0 && (
-                    <div
-                      style={{
-                        marginTop: 10,
-                        padding: "12px 14px",
-                        borderRadius: 12,
-                        background: "rgba(8,8,28,0.8)",
-                        border: "1px solid rgba(124,58,237,0.15)",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 6,
-                      }}
-                    >
-                      <p
-                        style={{
-                          fontSize: 10,
-                          fontWeight: 700,
-                          color: "rgba(100,116,139,0.5)",
-                          letterSpacing: "0.1em",
-                          textTransform: "uppercase",
-                          marginBottom: 2,
-                        }}
-                      >
-                        Requirements
-                      </p>
-                      {[
-                        [isLongEnough, "At least 6 characters"],
-                        [hasUppercase, "One uppercase letter (A–Z)"],
-                        [hasLowercase, "One lowercase letter (a–z)"],
-                      ].map(([met, text]) => (
-                        <div key={text} className="req-item">
-                          {met ? (
-                            <Check
-                              size={13}
-                              style={{ color: "#34d399", flexShrink: 0 }}
-                            />
-                          ) : (
-                            <X
-                              size={13}
-                              style={{
-                                color: "rgba(100,116,139,0.4)",
-                                flexShrink: 0,
-                              }}
-                            />
-                          )}
-                          <span className={met ? "req-met" : "req-unmet"}>
-                            {text}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
 
-                {/* Submit */}
                 <button
                   type="submit"
                   className="glow-btn"
-                  disabled={
-                    isLoading || (password.length > 0 && !isPasswordValid)
-                  }
+                  disabled={isLoading}
                   style={{ marginTop: 4 }}
                 >
-                  {isLoading ? "Creating Account..." : "Create Account →"}
+                  {isLoading ? "Signing in..." : "Sign In →"}
                 </button>
               </form>
 
@@ -730,9 +606,9 @@ export default function SignupPage() {
                   textAlign: "center",
                 }}
               >
-                Already have an account?{" "}
+                Don't have an account?{" "}
                 <Link
-                  href="/auth/signin"
+                  href="/auth/signup"
                   style={{
                     background: "linear-gradient(90deg, #a78bfa, #22d3ee)",
                     WebkitBackgroundClip: "text",
@@ -742,7 +618,7 @@ export default function SignupPage() {
                     textDecoration: "none",
                   }}
                 >
-                  Sign In
+                  Create one free
                 </Link>
               </p>
             </div>
