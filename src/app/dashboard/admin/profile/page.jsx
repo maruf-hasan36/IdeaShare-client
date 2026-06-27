@@ -127,7 +127,7 @@ export default function UserProfilePage() {
             {/* Full Name */}
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-semibold text-slate-500">
-                Full Names
+                Full Name
               </label>
               <input
                 type="text"
