@@ -606,7 +606,7 @@ export default function LoginPage() {
                   textAlign: "center",
                 }}
               >
-                Don't have an account?{" "}
+                Don have an account?{" "}
                 <Link
                   href="/auth/signup"
                   style={{
